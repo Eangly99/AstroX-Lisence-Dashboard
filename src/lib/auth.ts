@@ -22,17 +22,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       const discordId = account?.providerAccountId || user?.id;
-      console.log("[Auth Debug] SignIn Attempt:", {
-        userId: user?.id,
-        providerAccountId: account?.providerAccountId,
-        profileId: profile?.id,
-        allowedAdminsRaw: process.env.ADMIN_DISCORD_IDS
-      });
 
       if (!discordId) {
-        console.warn("[Auth Debug] Denied: No Discord ID resolved.");
         return false;
       }
 
@@ -40,17 +33,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         .split(',')
         .map((id) => id.replace(/['"]/g, '').trim());
 
-      const isAllowed = allowedAdmins.includes(discordId);
-      console.log("[Auth Debug] Access Check:", {
-        resolvedId: discordId,
-        isAllowed,
-        matchedInList: allowedAdmins
-      });
-
-      return isAllowed;
+      return allowedAdmins.includes(discordId);
     },
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account }) {
+      if (account?.providerAccountId) {
+        token.userId = account.providerAccountId;
+      } else if (user && !token.userId) {
         token.userId = user.id;
       }
 
@@ -65,11 +53,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .setIssuedAt()
             .setIssuer('astrox-license')
             .setAudience('astrox-license-admin')
-            .setExpirationTime('24h') // 24 hours validity
+            .setExpirationTime('1h') // 1 hour validity (reduced from 24h)
             .sign(secretKey);
           token.apiToken = apiToken;
         } catch (err) {
-          console.error("[Auth Debug] Token signing failed:", err);
+          console.error("Token signing failed:", err);
         }
       }
       return token;

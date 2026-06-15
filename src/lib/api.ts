@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/react';
 
 const API_BASE_URL = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
+  ? (process.env.NEXT_PUBLIC_API_URL || '')
   : '';
 
 async function getAuthToken() {
@@ -24,6 +24,9 @@ async function getAuthToken() {
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  if (typeof window === 'undefined' && !process.env.NEXT_PUBLIC_API_URL) {
+    throw new Error('NEXT_PUBLIC_API_URL environment variable is required for server-side fetches but is not set.');
+  }
   const token = await getAuthToken();
   const headers = new Headers(options.headers);
 
