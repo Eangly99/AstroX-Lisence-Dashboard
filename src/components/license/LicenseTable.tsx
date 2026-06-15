@@ -220,7 +220,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                   e.stopPropagation();
                   setActiveDropdown(isOpen ? null : license._id);
                 }}
-                className="text-zinc-500 hover:text-zinc-200 p-1.5 hover:bg-zinc-800 rounded transition-colors duration-150"
+                className="text-zinc-500 hover:text-zinc-200 p-1.5 hover:bg-zinc-800 rounded transition-colors duration-150 cursor-pointer"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
@@ -234,13 +234,13 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                       setActiveDropdown(null);
                     }}
                   />
-                  <div className="absolute right-0 mt-1.5 w-44 flat-card bg-zinc-900 border border-border shadow-lg z-20 overflow-hidden py-1">
+                  <div className="absolute right-0 mt-1.5 w-44 rounded-lg bg-zinc-950/90 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/85 z-20 overflow-hidden py-1">
                     <button
                       onClick={() => {
                         setActiveDropdown(null);
                         router.push(`/licenses/${license.key}`);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white flex items-center gap-2"
+                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       View Details
@@ -248,7 +248,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                     {license.status !== 'suspended' && license.status !== 'revoked' && (
                       <button
                         onClick={(e) => handleAction(e, 'suspend', license)}
-                        className="w-full text-left px-3 py-2 text-xs font-medium text-amber-400 hover:bg-zinc-800 hover:text-amber-300 flex items-center gap-2"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-amber-400 hover:bg-white/5 hover:text-amber-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
                       >
                         <Ban className="w-3.5 h-3.5" />
                         Suspend
@@ -257,7 +257,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                     {license.status === 'suspended' && (
                       <button
                         onClick={(e) => handleAction(e, 'reactivate', license)}
-                        className="w-full text-left px-3 py-2 text-xs font-medium text-emerald-400 hover:bg-zinc-800 hover:text-emerald-300 flex items-center gap-2"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-emerald-400 hover:bg-white/5 hover:text-emerald-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         Reactivate
@@ -266,7 +266,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                     {license.status !== 'revoked' && (
                       <button
                         onClick={(e) => handleAction(e, 'revoke', license)}
-                        className="w-full text-left px-3 py-2 text-xs font-medium text-rose-400 hover:bg-zinc-800 hover:text-rose-300 flex items-center gap-2"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-400 hover:bg-white/5 hover:text-rose-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
                       >
                         <ShieldAlert className="w-3.5 h-3.5" />
                         Revoke
@@ -278,7 +278,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                         setActiveDropdown(null);
                         onTransferClick(license);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs font-medium text-sky-400 hover:bg-zinc-800 hover:text-sky-300 flex items-center gap-2"
+                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-sky-400 hover:bg-white/5 hover:text-sky-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />
                       Transfer License
@@ -305,11 +305,11 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
       <table className="w-full text-left border-collapse min-w-[1000px]">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b border-border bg-zinc-900/50">
+            <tr key={headerGroup.id} className="border-b border-white/5 bg-zinc-950/45">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-3 text-xs font-bold text-zinc-500 uppercase tracking-wider"
+                  className="px-4 py-3 text-xxs font-bold text-zinc-500 uppercase tracking-widest font-mono"
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -317,18 +317,18 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-border bg-card">
+        <tbody className="divide-y divide-white/[0.03] bg-zinc-900/10">
           {isLoading ? (
             Array.from({ length: 5 }).map((_, idx) => (
               <tr key={idx} className="h-16">
                 <td colSpan={10} className="px-4 py-3">
-                  <div className="h-4 bg-zinc-800 rounded animate-pulse w-full" />
+                  <div className="h-4 bg-zinc-800/40 rounded animate-pulse w-full" />
                 </td>
               </tr>
             ))
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={10} className="px-4 py-8 text-center text-sm text-zinc-500">
+              <td colSpan={10} className="px-4 py-8 text-center text-sm text-zinc-500 font-sans">
                 No licenses found matching current filters.
               </td>
             </tr>
@@ -342,8 +342,8 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
                 tabIndex={0}
                 onKeyDown={(e) => handleKeyDown(e, idx, row.original.key)}
                 onClick={() => router.push(`/licenses/${row.original.key}`)}
-                className={`h-16 hover:bg-zinc-800/20 focus:bg-zinc-800/40 cursor-pointer outline-none transition-colors duration-150 ${
-                  focusedRowIndex === idx ? 'bg-zinc-800/30' : ''
+                className={`h-16 hover:bg-white/[0.02] focus:bg-white/[0.04] cursor-pointer outline-none transition-all duration-150 border-b border-white/[0.02] ${
+                  focusedRowIndex === idx ? 'bg-white/[0.03]' : ''
                 }`}
               >
                 {row.getVisibleCells().map((cell) => (

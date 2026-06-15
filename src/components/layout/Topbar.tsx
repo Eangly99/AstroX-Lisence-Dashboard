@@ -38,45 +38,48 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   };
 
   return (
-    <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 text-zinc-300">
+    <header className="h-16 border-b border-border bg-zinc-950/20 backdrop-blur-md flex items-center justify-between px-6 text-zinc-300 z-30 relative glass-panel">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}
-          className="md:hidden text-zinc-400 hover:text-white p-1"
+          className="md:hidden text-zinc-400 hover:text-white p-1 cursor-pointer"
           aria-label="Toggle navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="font-semibold text-lg text-white tracking-tight">{getTitle()}</h1>
+        <h1 className="font-semibold text-xs text-white tracking-widest font-mono uppercase">{getTitle()}</h1>
       </div>
 
       <div className="flex items-center gap-4">
         {session?.user && (
           <div className="flex items-center gap-3">
             {/* User Avatar */}
-            {session.user.image ? (
-              <Image
-                src={session.user.image}
-                alt={session.user.name || 'User Avatar'}
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-full border border-border"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-zinc-800 border border-border flex items-center justify-center">
-                <User className="w-4 h-4 text-zinc-400" />
-              </div>
-            )}
+            <div className="relative">
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name || 'User Avatar'}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full border border-border"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-zinc-800 border border-border flex items-center justify-center">
+                  <User className="w-4 h-4 text-zinc-400" />
+                </div>
+              )}
+              <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-zinc-950 animate-pulse" />
+            </div>
             
             {/* Username */}
-            <span className="hidden sm:inline text-sm font-medium text-zinc-300">
+            <span className="hidden sm:inline text-xs font-semibold text-zinc-200 tracking-wider">
               {session.user.name}
             </span>
 
             {/* Logout button */}
             <button
               onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-              className="text-zinc-500 hover:text-white transition-colors duration-150 p-1.5 hover:bg-zinc-800/60 rounded"
+              className="text-zinc-500 hover:text-rose-400 transition-colors duration-150 p-1.5 hover:bg-rose-500/10 rounded cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
