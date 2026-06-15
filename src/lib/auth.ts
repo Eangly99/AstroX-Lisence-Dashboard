@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
-import { SignJWT } from 'jose';
+import { SignJWT } from 'jose/jwt/sign';
 
 declare module 'next-auth' {
   interface Session {
