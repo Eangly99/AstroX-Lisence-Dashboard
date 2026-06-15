@@ -1,6 +1,8 @@
 import { getSession } from 'next-auth/react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = typeof window === 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
+  : '';
 
 async function getAuthToken() {
   if (typeof window === 'undefined') {
