@@ -3,6 +3,13 @@
 
 $ErrorActionPreference = "Stop"
 
+# Auto-detect directory and navigate to the project folder if run from the root
+$currentDir = Split-Path -Leaf (Get-Location)
+if ($currentDir -eq "astrox-license") {
+    Write-Host "Navigating to astrox-license-dash..." -ForegroundColor Gray
+    Set-Location -Path "astrox-license-dash"
+}
+
 # Ensure Netlify CLI is installed
 if (!(Get-Command netlify -ErrorAction SilentlyContinue)) {
     Write-Host "Netlify CLI not found. Installing globally..." -ForegroundColor Yellow
@@ -18,13 +25,13 @@ if (!$authCheck.userId) {
 }
 
 # Link site if not linked
-if (!(Test-Path "astrox-license-dash\.netlify")) {
+if (!(Test-Path ".netlify")) {
     Write-Host "Linking site to Netlify..." -ForegroundColor Yellow
-    netlify link --dir astrox-license-dash
+    netlify link
 }
 
 # Read local .env if it exists and sync environment variables
-$envFile = "astrox-license-dash\.env"
+$envFile = ".env"
 if (Test-Path $envFile) {
     Write-Host "Found local .env file. Syncing environment variables to Netlify..." -ForegroundColor Cyan
     Get-Content $envFile | ForEach-Object {
@@ -35,7 +42,7 @@ if (Test-Path $envFile) {
             $value = $split[1].Trim()
             if ($value) {
                 Write-Host "Setting Netlify environment variable: $key" -ForegroundColor Gray
-                netlify env:set $key "$value" --dir astrox-license-dash
+                netlify env:set $key "$value"
             }
         }
     }
@@ -46,8 +53,8 @@ if (Test-Path $envFile) {
 
 # Ensure AUTH_TRUST_HOST is set to true for NextAuth v5 in production on Netlify
 Write-Host "Configuring AUTH_TRUST_HOST on Netlify..." -ForegroundColor Cyan
-netlify env:set AUTH_TRUST_HOST "true" --dir astrox-license-dash
+netlify env:set AUTH_TRUST_HOST "true"
 
 # Build and Deploy
 Write-Host "Building and deploying to Netlify Production..." -ForegroundColor Green
-netlify deploy --prod --build --dir astrox-license-dash
+netlify deploy --prod --build
