@@ -50,7 +50,7 @@ function LicensesPageContent() {
       }
     });
     // Reset page on filter changes unless changing page directly
-    if (!newFilters.page && newFilters.page !== 1) {
+    if (!('page' in newFilters)) {
       params.set('page', '1');
     }
     router.push(`${pathname}?${params.toString()}`);
@@ -61,7 +61,12 @@ function LicensesPageContent() {
     if (!transferringLicense) return;
 
     if (!transferOwnerId.trim() || !transferOwnerTag.trim()) {
-      toast.error('Discord User ID and Tag are required');
+      toast.error('Discord User ID and Username are required');
+      return;
+    }
+
+    if (!/^[a-z0-9_.]+$/.test(transferOwnerTag.trim()) || transferOwnerTag.trim().length < 2 || transferOwnerTag.trim().length > 32) {
+      toast.error('Must be a valid Discord username (2-32 chars, lowercase, alphanumeric, underscores, or periods)');
       return;
     }
 
@@ -95,7 +100,7 @@ function LicensesPageContent() {
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
           <input
             type="text"
-            placeholder="Search by owner Discord tag..."
+            placeholder="Search by username..."
             value={ownerTag}
             onChange={(e) => updateFilters({ ownerTag: e.target.value })}
             className="flat-input pl-9 w-full text-xs"
@@ -227,11 +232,11 @@ function LicensesPageContent() {
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-xxs font-semibold text-zinc-400 uppercase tracking-wider">
-                  New Owner Discord Tag
+                  New Owner Discord Username
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. username"
+                  placeholder="e.g. lowercase_username"
                   value={transferOwnerTag}
                   onChange={(e) => setTransferOwnerTag(e.target.value)}
                   className="flat-input text-xs"

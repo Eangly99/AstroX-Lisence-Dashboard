@@ -22,7 +22,11 @@ const generateLicenseSchema = z
   .object({
     pluginId: z.string().min(1, 'Plugin selection is required'),
     ownerId: z.string().regex(/^\d{17,20}$/, 'Must be a valid Discord ID (17-20 digits)'),
-    ownerTag: z.string().min(2, 'Discord tag must be at least 2 characters'),
+    ownerTag: z
+      .string()
+      .min(2, 'Discord username must be at least 2 characters')
+      .max(32, 'Discord username must be at most 32 characters')
+      .regex(/^[a-z0-9_.]+$/, 'Must be a valid Discord username (lowercase, alphanumeric, underscores, or periods)'),
     type: z.enum(['lifetime', 'trial', 'subscription']),
     durationDays: z.string().optional(),
     maxIps: z.string().regex(/^\d+$/, 'Must be a valid number of IPs'),
@@ -130,15 +134,15 @@ export default function GenerateLicenseForm({ plugins, onClose }: GenerateLicens
           {errors.ownerId && <p className="text-xs text-rose-500">{errors.ownerId.message}</p>}
         </div>
 
-        {/* Owner Discord Tag */}
+        {/* Owner Discord Username */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="ownerTag" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-            Owner Discord Tag
+            Owner Discord Username
           </label>
           <input
             id="ownerTag"
             type="text"
-            placeholder="e.g. username"
+            placeholder="e.g. lowercase_username"
             className="flat-input"
             {...register('ownerTag')}
           />
