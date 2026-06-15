@@ -44,6 +44,10 @@ else
     echo "Make sure to set NEXT_PUBLIC_API_URL, AUTH_SECRET, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, ADMIN_DISCORD_IDS, and HMAC_SECRET manually in your Netlify dashboard."
 fi
 
+# Ensure AUTH_TRUST_HOST is set to true for NextAuth v5 in production on Netlify
+echo "Configuring AUTH_TRUST_HOST on Netlify..."
+netlify env:set AUTH_TRUST_HOST "true" --dir astrox-license-dash
+
 # Build and Deploy
 echo "Building and deploying to Netlify Production..."
 netlify deploy --prod --build --dir astrox-license-dash

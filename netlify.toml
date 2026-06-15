@@ -5,3 +5,4 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  AUTH_TRUST_HOST = "true"
