@@ -1,0 +1,21 @@
+'use client';
+
+import React, { useState } from 'react';
+import Sidebar from '@/components/layout/Sidebar';
+import Topbar from '@/components/layout/Topbar';
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  return (
+    <div className="flex h-screen bg-background overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 no-scrollbar">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
