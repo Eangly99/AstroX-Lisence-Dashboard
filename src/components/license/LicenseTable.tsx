@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   useReactTable,
   getCoreRowModel,
@@ -214,79 +215,84 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
           const isOpen = activeDropdown === license._id;
 
           return (
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveDropdown(isOpen ? null : license._id);
-                }}
-                className="text-zinc-500 hover:text-zinc-200 p-1.5 hover:bg-zinc-800 rounded transition-colors duration-150 cursor-pointer"
-              >
-                <MoreVertical className="w-4 h-4" />
-              </button>
+            <DropdownMenu.Root open={isOpen} onOpenChange={(open) => setActiveDropdown(open ? license._id : null)}>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-zinc-500 hover:text-zinc-200 p-1.5 hover:bg-zinc-800 rounded transition-colors duration-150 cursor-pointer outline-none"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+              </DropdownMenu.Trigger>
 
-              {isOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveDropdown(null);
-                    }}
-                  />
-                  <div className="absolute right-0 mt-1.5 w-44 rounded-lg bg-zinc-950/90 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/85 z-20 overflow-hidden py-1">
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={6}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-44 rounded-lg bg-zinc-950/95 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/85 z-50 overflow-hidden py-1"
+                >
+                  <DropdownMenu.Item asChild>
                     <button
                       onClick={() => {
                         setActiveDropdown(null);
                         router.push(`/licenses/${license.key}`);
                       }}
-                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
+                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2.5 transition-colors duration-150 cursor-pointer outline-none"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       View Details
                     </button>
-                    {license.status !== 'suspended' && license.status !== 'revoked' && (
+                  </DropdownMenu.Item>
+                  {license.status !== 'suspended' && license.status !== 'revoked' && (
+                    <DropdownMenu.Item asChild>
                       <button
                         onClick={(e) => handleAction(e, 'suspend', license)}
-                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-amber-400 hover:bg-white/5 hover:text-amber-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-amber-400 hover:bg-white/5 hover:text-amber-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer outline-none"
                       >
                         <Ban className="w-3.5 h-3.5" />
                         Suspend
                       </button>
-                    )}
-                    {license.status === 'suspended' && (
+                    </DropdownMenu.Item>
+                  )}
+                  {license.status === 'suspended' && (
+                    <DropdownMenu.Item asChild>
                       <button
                         onClick={(e) => handleAction(e, 'reactivate', license)}
-                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-emerald-400 hover:bg-white/5 hover:text-emerald-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-emerald-400 hover:bg-white/5 hover:text-emerald-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer outline-none"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         Reactivate
                       </button>
-                    )}
-                    {license.status !== 'revoked' && (
+                    </DropdownMenu.Item>
+                  )}
+                  {license.status !== 'revoked' && (
+                    <DropdownMenu.Item asChild>
                       <button
                         onClick={(e) => handleAction(e, 'revoke', license)}
-                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-400 hover:bg-white/5 hover:text-rose-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
+                        className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-400 hover:bg-white/5 hover:text-rose-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer outline-none"
                       >
                         <ShieldAlert className="w-3.5 h-3.5" />
                         Revoke
                       </button>
-                    )}
+                    </DropdownMenu.Item>
+                  )}
+                  <DropdownMenu.Item asChild>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveDropdown(null);
                         onTransferClick(license);
                       }}
-                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-sky-400 hover:bg-white/5 hover:text-sky-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer"
+                      className="w-full text-left px-3.5 py-2 text-xs font-semibold text-sky-400 hover:bg-white/5 hover:text-sky-300 flex items-center gap-2.5 transition-colors duration-150 cursor-pointer outline-none"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />
                       Transfer License
                     </button>
-                  </div>
-                </>
-              )}
-            </div>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           );
         },
       },
@@ -321,7 +327,7 @@ export default function LicenseTable({ data, onTransferClick, isLoading }: Licen
           {isLoading ? (
             Array.from({ length: 5 }).map((_, idx) => (
               <tr key={idx} className="h-16">
-                <td colSpan={10} className="px-4 py-3">
+                <td colSpan={columns.length} className="px-4 py-3">
                   <div className="h-4 bg-zinc-800/40 rounded animate-pulse w-full" />
                 </td>
               </tr>

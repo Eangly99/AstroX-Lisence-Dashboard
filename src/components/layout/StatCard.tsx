@@ -10,7 +10,8 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, delta, icon: Icon }: StatCardProps) {
   const getTrendColor = () => {
-    if (!delta) return 'text-zinc-500 border-zinc-800 bg-zinc-800/20';
+    if (delta === undefined || delta === null) return 'text-zinc-500 border-zinc-800 bg-zinc-800/20';
+    if (delta === 0) return 'text-zinc-400 border-zinc-800 bg-zinc-800/10';
     return delta > 0 
       ? 'text-emerald-400 bg-emerald-500/5 border-emerald-500/20' 
       : 'text-rose-400 bg-rose-500/5 border-rose-500/20';
@@ -58,7 +59,7 @@ export default function StatCard({ title, value, delta, icon: Icon }: StatCardPr
     };
   };
 
-  const TrendIcon = !delta ? Minus : delta > 0 ? TrendingUp : TrendingDown;
+  const TrendIcon = (delta === undefined || delta === null || delta === 0) ? Minus : delta > 0 ? TrendingUp : TrendingDown;
   const theme = getCardTheme();
 
   return (

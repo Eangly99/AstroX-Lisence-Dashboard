@@ -133,3 +133,16 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Custom UI-UX Pro Max animations and sizing classes */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.text-xxs {
+  font-size: 0.625rem; /* 10px */
+  line-height: 1rem;
+}
