@@ -38,7 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       const allowedAdmins = (process.env.ADMIN_DISCORD_IDS || '')
         .split(',')
-        .map((id) => id.trim());
+        .map((id) => id.replace(/['"]/g, '').trim());
 
       const isAllowed = allowedAdmins.includes(discordId);
       console.log("[Auth Debug] Access Check:", {
