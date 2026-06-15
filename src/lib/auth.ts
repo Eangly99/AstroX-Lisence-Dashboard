@@ -22,15 +22,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      if (!user.id) return false;
+    async signIn({ user, account, profile }) {
+      const discordId = account?.providerAccountId || user?.id;
+      console.log("[Auth Debug] SignIn Attempt:", {
+        userId: user?.id,
+        providerAccountId: account?.providerAccountId,
+        profileId: profile?.id,
+        allowedAdminsRaw: process.env.ADMIN_DISCORD_IDS
+      });
+
+      if (!discordId) {
+        console.warn("[Auth Debug] Denied: No Discord ID resolved.");
+        return false;
+      }
+
       const allowedAdmins = (process.env.ADMIN_DISCORD_IDS || '')
         .split(',')
         .map((id) => id.trim());
-      if (allowedAdmins.includes(user.id)) {
-        return true;
-      }
-      return false; // Deny access
+
+      const isAllowed = allowedAdmins.includes(discordId);
+      console.log("[Auth Debug] Access Check:", {
+        resolvedId: discordId,
+        isAllowed,
+        matchedInList: allowedAdmins
+      });
+
+      return isAllowed;
     },
     async jwt({ token, user }) {
       if (user) {
