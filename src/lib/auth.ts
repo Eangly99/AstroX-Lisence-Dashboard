@@ -52,19 +52,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.userId = user.id;
+      }
 
-        // Generate an admin API token signed with the shared HMAC_SECRET
-        const secret = process.env.HMAC_SECRET || '';
-        if (secret.length >= 32) {
+      // Generate or refresh the admin API token on every session validation
+      const secret = process.env.HMAC_SECRET || '';
+      const userId = token.userId as string;
+      if (userId && secret.length >= 32) {
+        try {
           const secretKey = new TextEncoder().encode(secret);
-          const apiToken = await new SignJWT({ userId: user.id })
+          const apiToken = await new SignJWT({ userId })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
             .setIssuer('astrox-license')
             .setAudience('astrox-license-admin')
-            .setExpirationTime('5m') // 5 minutes validity
+            .setExpirationTime('24h') // 24 hours validity
             .sign(secretKey);
           token.apiToken = apiToken;
+        } catch (err) {
+          console.error("[Auth Debug] Token signing failed:", err);
         }
       }
       return token;
