@@ -11,7 +11,7 @@ interface LicenseDetailCardProps {
   license: LicenseData;
 }
 
-const IPV4_REGEX = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+const IPV4_REGEX = /^(\*|0\.0\.0\.0|((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?))$/;
 
 export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
   const [newIp, setNewIp] = useState('');
