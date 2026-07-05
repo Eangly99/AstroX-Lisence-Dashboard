@@ -203,6 +203,22 @@ export function useUpdateIpsMutation(key: string) {
   });
 }
 
+export function useUpdateMaxIpsMutation(key: string) {
+  const queryClient = useQueryClient();
+  return useMutation<LicenseData, Error, number>({
+    mutationFn: (maxIps) =>
+      apiFetch<LicenseData>(`/api/v1/admin/licenses/${key}/max-ips`, {
+        method: 'PUT',
+        body: JSON.stringify({ maxIps }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['license', key] });
+      queryClient.invalidateQueries({ queryKey: ['licenses'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    },
+  });
+}
+
 export function usePluginsQuery() {
   return useQuery<PluginInfo[]>({
     queryKey: queryKeys.plugins(),

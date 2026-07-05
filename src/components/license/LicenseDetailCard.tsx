@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Copy, Plus, Trash2, KeyRound, Monitor, Calendar, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { LicenseData, useHwidResetMutation, useUpdateIpsMutation } from '@/hooks/useLicenses';
+import { LicenseData, useHwidResetMutation, useUpdateIpsMutation, useUpdateMaxIpsMutation } from '@/hooks/useLicenses';
 import LicenseStatusBadge from './LicenseStatusBadge';
 
 interface LicenseDetailCardProps {
@@ -15,9 +15,12 @@ const IPV4_REGEX = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?
 
 export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
   const [newIp, setNewIp] = useState('');
+  const [isEditingMaxIps, setIsEditingMaxIps] = useState(false);
+  const [maxIpsInput, setMaxIpsInput] = useState(license.maxIps.toString());
   
   const hwidResetMutation = useHwidResetMutation(license.key);
   const updateIpsMutation = useUpdateIpsMutation(license.key);
+  const updateMaxIpsMutation = useUpdateMaxIpsMutation(license.key);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -54,7 +57,7 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
       return;
     }
 
-    if (license.allowedIps.length >= license.maxIps) {
+    if (license.maxIps !== -1 && license.allowedIps.length >= license.maxIps) {
       toast.error(`IP limit exceeded. Maximum allowed: ${license.maxIps}`);
       return;
     }
@@ -83,6 +86,31 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
       loading: loadingMsg,
       success: 'Whitelisted IPs updated successfully',
       error: (err) => err.message || 'Failed to update whitelisted IPs',
+    });
+  };
+
+  const handleSaveMaxIps = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = parseInt(maxIpsInput, 10);
+    if (isNaN(val) || val < -1 || val === 0) {
+      toast.error('Invalid IP limit. Must be -1 (unlimited) or a positive integer.');
+      return;
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      updateMaxIpsMutation.mutate(val, {
+        onSuccess: () => {
+          setIsEditingMaxIps(false);
+          resolve(true);
+        },
+        onError: (err) => reject(err),
+      });
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating IP capacity limit...',
+      success: 'IP capacity limit updated successfully',
+      error: (err) => err.message || 'Failed to update IP capacity limit',
     });
   };
 
@@ -240,9 +268,51 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
               <ShieldCheck className="w-4 h-4 text-zinc-400" />
               Allowed IPv4 Addresses
             </h4>
-            <span className="text-xs font-mono text-zinc-500">
-              {license.allowedIps.length} / {license.maxIps}
-            </span>
+            {isEditingMaxIps ? (
+              <form onSubmit={handleSaveMaxIps} className="flex items-center gap-1.5 animate-in fade-in duration-100">
+                <input
+                  type="number"
+                  min="-1"
+                  max="10000"
+                  value={maxIpsInput}
+                  onChange={(e) => setMaxIpsInput(e.target.value)}
+                  className="flat-input font-mono text-xxs w-14 py-0.5 px-1.5"
+                  style={{ height: '24px' }}
+                  title="IP Limit (-1 for Unlimited)"
+                />
+                <button
+                  type="submit"
+                  disabled={updateMaxIpsMutation.isPending}
+                  className="text-emerald-400 hover:text-emerald-300 font-bold text-xxs px-1 hover:bg-emerald-500/10 rounded cursor-pointer disabled:opacity-50"
+                  style={{ height: '24px' }}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingMaxIps(false);
+                    setMaxIpsInput(license.maxIps.toString());
+                  }}
+                  className="text-zinc-500 hover:text-zinc-300 text-xxs px-1 hover:bg-zinc-800 rounded cursor-pointer"
+                  style={{ height: '24px' }}
+                >
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono text-zinc-500">
+                  {license.allowedIps.length} / {license.maxIps === -1 ? '∞' : license.maxIps}
+                </span>
+                <button
+                  onClick={() => setIsEditingMaxIps(true)}
+                  className="text-xxs text-primary hover:text-white hover:underline cursor-pointer"
+                >
+                  Edit Limit
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -271,7 +341,7 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
             )}
 
             {/* Add IP form */}
-            {license.allowedIps.length < license.maxIps && (
+            {(license.maxIps === -1 || license.allowedIps.length < license.maxIps) && (
               <form onSubmit={handleAddIp} className="flex gap-2">
                 <input
                   type="text"
