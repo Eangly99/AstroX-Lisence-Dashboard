@@ -33,7 +33,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
+  if (!headers.has('Content-Type') && options.body !== undefined && options.body !== null && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
