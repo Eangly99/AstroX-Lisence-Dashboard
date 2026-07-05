@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Copy, Plus, Trash2, KeyRound, Monitor, Calendar, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { LicenseData, useHwidResetMutation, useUpdateIpsMutation, useUpdateMaxIpsMutation } from '@/hooks/useLicenses';
+import { LicenseData, useHwidResetMutation, useUpdateIpsMutation, useUpdateMaxIpsMutation, useUpdateMaxServersMutation } from '@/hooks/useLicenses';
 import LicenseStatusBadge from './LicenseStatusBadge';
 
 interface LicenseDetailCardProps {
@@ -17,10 +17,13 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
   const [newIp, setNewIp] = useState('');
   const [isEditingMaxIps, setIsEditingMaxIps] = useState(false);
   const [maxIpsInput, setMaxIpsInput] = useState(license.maxIps.toString());
+  const [isEditingMaxServers, setIsEditingMaxServers] = useState(false);
+  const [maxServersInput, setMaxServersInput] = useState((license.maxServersPerIp ?? 1).toString());
   
   const hwidResetMutation = useHwidResetMutation(license.key);
   const updateIpsMutation = useUpdateIpsMutation(license.key);
   const updateMaxIpsMutation = useUpdateMaxIpsMutation(license.key);
+  const updateMaxServersMutation = useUpdateMaxServersMutation(license.key);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -111,6 +114,31 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
       loading: 'Updating IP capacity limit...',
       success: 'IP capacity limit updated successfully',
       error: (err) => err.message || 'Failed to update IP capacity limit',
+    });
+  };
+
+  const handleSaveMaxServers = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = parseInt(maxServersInput, 10);
+    if (isNaN(val) || val < -1 || val === 0) {
+      toast.error('Invalid concurrent servers limit. Must be -1 (unlimited) or a positive integer.');
+      return;
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      updateMaxServersMutation.mutate(val, {
+        onSuccess: () => {
+          setIsEditingMaxServers(false);
+          resolve(true);
+        },
+        onError: (err) => reject(err),
+      });
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating concurrent servers limit...',
+      success: 'Concurrent servers limit updated successfully',
+      error: (err) => err.message || 'Failed to update concurrent servers limit',
     });
   };
 
@@ -307,6 +335,56 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
                 </span>
                 <button
                   onClick={() => setIsEditingMaxIps(true)}
+                  className="text-xxs text-primary hover:text-white hover:underline cursor-pointer"
+                >
+                  Edit Limit
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Concurrent Servers per IP Limit */}
+          <div className="flex items-center justify-between bg-zinc-950/40 p-2.5 border border-border/60 rounded text-xs">
+            <span className="text-zinc-400 font-medium">Servers per Dedicated Host (IP)</span>
+            {isEditingMaxServers ? (
+              <form onSubmit={handleSaveMaxServers} className="flex items-center gap-1.5 animate-in fade-in duration-100">
+                <input
+                  type="number"
+                  min="-1"
+                  max="1000"
+                  value={maxServersInput}
+                  onChange={(e) => setMaxServersInput(e.target.value)}
+                  className="flat-input font-mono text-xxs w-14 py-0.5 px-1.5"
+                  style={{ height: '24px' }}
+                  title="Server Limit (-1 for Unlimited)"
+                />
+                <button
+                  type="submit"
+                  disabled={updateMaxServersMutation.isPending}
+                  className="text-emerald-400 hover:text-emerald-300 font-bold text-xxs px-1 hover:bg-emerald-500/10 rounded cursor-pointer disabled:opacity-50"
+                  style={{ height: '24px' }}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingMaxServers(false);
+                    setMaxServersInput((license.maxServersPerIp ?? 1).toString());
+                  }}
+                  className="text-zinc-500 hover:text-zinc-300 text-xxs px-1 hover:bg-zinc-800 rounded cursor-pointer"
+                  style={{ height: '24px' }}
+                >
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-zinc-300">
+                  {(license.maxServersPerIp ?? 1) === -1 ? 'Unlimited (∞)' : `${license.maxServersPerIp ?? 1} Max`}
+                </span>
+                <button
+                  onClick={() => setIsEditingMaxServers(true)}
                   className="text-xxs text-primary hover:text-white hover:underline cursor-pointer"
                 >
                   Edit Limit

@@ -23,6 +23,7 @@ export interface LicenseData {
   type: 'trial' | 'lifetime' | 'subscription';
   status: 'active' | 'suspended' | 'revoked' | 'expired';
   maxIps: number;
+  maxServersPerIp?: number;
   allowedIps: string[];
   hwid: string | null;
   expiresAt: string | null;
@@ -210,6 +211,22 @@ export function useUpdateMaxIpsMutation(key: string) {
       apiFetch<LicenseData>(`/api/v1/admin/licenses/${key}/max-ips`, {
         method: 'PUT',
         body: JSON.stringify({ maxIps }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['license', key] });
+      queryClient.invalidateQueries({ queryKey: ['licenses'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    },
+  });
+}
+
+export function useUpdateMaxServersMutation(key: string) {
+  const queryClient = useQueryClient();
+  return useMutation<LicenseData, Error, number>({
+    mutationFn: (maxServers) =>
+      apiFetch<LicenseData>(`/api/v1/admin/licenses/${key}/max-servers`, {
+        method: 'PUT',
+        body: JSON.stringify({ maxServers }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['license', key] });

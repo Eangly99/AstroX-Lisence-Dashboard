@@ -27,6 +27,7 @@ export const AUDIT_ACTIONS = {
   BLACKLIST_REMOVE: 'blacklist_remove',
   UPDATE_IPS: 'update_ips',
   UPDATE_MAX_IPS: 'update_max_ips',
+  UPDATE_MAX_SERVERS_PER_IP: 'update_max_servers_per_ip',
   EXPIRE: 'expire',
 } as const;
 
