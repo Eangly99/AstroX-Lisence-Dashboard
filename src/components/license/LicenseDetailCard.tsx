@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Copy, Plus, Trash2, KeyRound, Monitor, Calendar, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { LicenseData, useHwidResetMutation, useUpdateIpsMutation, useUpdateMaxIpsMutation, useUpdateMaxServersMutation } from '@/hooks/useLicenses';
+import { LicenseData, useHwidResetMutation, useUpdateIpsMutation, useUpdateMaxIpsMutation, useUpdateMaxServersMutation, useUpdateAutoResetHwidMutation } from '@/hooks/useLicenses';
 import LicenseStatusBadge from './LicenseStatusBadge';
 
 interface LicenseDetailCardProps {
@@ -24,6 +24,7 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
   const updateIpsMutation = useUpdateIpsMutation(license.key);
   const updateMaxIpsMutation = useUpdateMaxIpsMutation(license.key);
   const updateMaxServersMutation = useUpdateMaxServersMutation(license.key);
+  const updateAutoResetHwidMutation = useUpdateAutoResetHwidMutation(license.key);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -42,6 +43,22 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
       loading: 'Resetting Hardware lock...',
       success: 'Hardware ID lock successfully reset',
       error: (err) => err.message || 'Failed to reset Hardware lock',
+    });
+  };
+
+  const handleToggleAutoReset = () => {
+    const nextState = !(license.autoResetHwid !== false);
+    const promise = new Promise((resolve, reject) => {
+      updateAutoResetHwidMutation.mutate(nextState, {
+        onSuccess: () => resolve(true),
+        onError: (err) => reject(err),
+      });
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating auto-reset setting...',
+      success: `Auto-reset setting ${nextState ? 'enabled' : 'disabled'} successfully`,
+      error: (err) => err.message || 'Failed to update auto-reset setting',
     });
   };
 
@@ -286,6 +303,21 @@ export default function LicenseDetailCard({ license }: LicenseDetailCardProps) {
                 {hwidResetMutation.isPending ? 'Resetting...' : 'Reset Hardware Lock'}
               </button>
             )}
+
+            <div className="flex items-center justify-between text-xs pt-2 border-t border-border/50">
+              <span className="text-zinc-400 font-medium">Auto-Reset (Single Instance):</span>
+              <button
+                onClick={handleToggleAutoReset}
+                disabled={updateAutoResetHwidMutation.isPending}
+                className={`px-2 py-1 rounded text-xxs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  license.autoResetHwid !== false
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
+                    : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700'
+                }`}
+              >
+                {license.autoResetHwid !== false ? 'Enabled' : 'Disabled'}
+              </button>
+            </div>
           </div>
         </div>
 

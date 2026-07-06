@@ -24,6 +24,7 @@ export interface LicenseData {
   status: 'active' | 'suspended' | 'revoked' | 'expired';
   maxIps: number;
   maxServersPerIp?: number;
+  autoResetHwid?: boolean;
   allowedIps: string[];
   hwid: string | null;
   expiresAt: string | null;
@@ -253,6 +254,22 @@ export function useCreatePluginMutation() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plugins'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    },
+  });
+}
+
+export function useUpdateAutoResetHwidMutation(key: string) {
+  const queryClient = useQueryClient();
+  return useMutation<LicenseData, Error, boolean>({
+    mutationFn: (enabled) =>
+      apiFetch<LicenseData>(`/api/v1/admin/licenses/${key}/auto-reset-hwid`, {
+        method: 'PUT',
+        body: JSON.stringify({ enabled }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['license', key] });
+      queryClient.invalidateQueries({ queryKey: ['licenses'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
     },
   });
