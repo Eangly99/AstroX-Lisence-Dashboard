@@ -135,7 +135,7 @@ export default function PluginsPage() {
             <input
               id="pluginName"
               type="text"
-              placeholder="e.g. AstroX AntiCheat"
+              placeholder="e.g. Cipher AntiCheat"
               className="flat-input text-xs"
               {...register('name')}
             />
@@ -150,7 +150,7 @@ export default function PluginsPage() {
             <input
               id="pluginSlug"
               type="text"
-              placeholder="e.g. astrox-anticheat"
+              placeholder="e.g. cipher-anticheat"
               className="flat-input text-xs font-mono"
               {...register('slug')}
             />

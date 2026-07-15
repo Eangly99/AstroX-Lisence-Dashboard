@@ -35,10 +35,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div className="flex items-center justify-between h-16 px-4 border-b border-border bg-zinc-950/20">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-violet-600 text-white font-bold shadow-[0_0_15px_rgba(124,58,237,0.4)]">
-            AX
+            CL
           </div>
           <span className="font-bold text-white tracking-widest text-xs xl:block md:hidden font-mono">
-            ASTROX LICENSE
+            CIPHER LICENSE
           </span>
         </div>
         <button
@@ -83,7 +83,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Footer */}
       <div className="p-4 border-t border-border text-xs text-zinc-500 xl:block md:hidden font-mono">
-        v1.0.0 &copy; 2026 AstroX
+        v1.0.0 &copy; 2026 Cipher
       </div>
     </div>
   );

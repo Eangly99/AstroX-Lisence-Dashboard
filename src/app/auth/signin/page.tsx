@@ -10,10 +10,10 @@ export default function SignInPage() {
       <div className="w-full max-w-md flat-card bg-card p-8 border border-border space-y-6">
         <div className="flex flex-col items-center text-center space-y-2">
           <div className="flex items-center justify-center w-12 h-12 rounded bg-primary text-white font-bold text-lg mb-2">
-            AX
+            CL
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            AstroX License Admin
+            Cipher License Admin
           </h2>
           <p className="text-xs text-zinc-500 max-w-xs">
             Access to this administrative control system is restricted. Unauthorized access attempts will be logged.

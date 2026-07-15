@@ -18,7 +18,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: 'AstroX License Dashboard',
+  title: 'Cipher License Dashboard',
   description: 'Minecraft Plugin License Management System',
 };
 

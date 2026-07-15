@@ -5,9 +5,9 @@
 set -e
 
 # Auto-detect directory and navigate to the project folder if run from the root
-if [ "$(basename "$PWD")" = "astrox-license" ]; then
-    echo "Navigating to astrox-license-dash..."
-    cd astrox-license-dash
+if [ "$(basename "$PWD")" = "cipher-license-bot" ]; then
+    echo "Navigating to cipher-dash..."
+    cd cipher-dash
 fi
 
 # Ensure Netlify CLI is installed

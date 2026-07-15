@@ -89,19 +89,20 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
       }
 
       return await response.json();
-    } catch (err: any) {
-      const isTimeout = err.name === 'AbortError' && (!options.signal || !options.signal.aborted);
+    } catch (err) {
+      const error = err as Error & { name?: string };
+      const isTimeout = error.name === 'AbortError' && (!options.signal || !options.signal.aborted);
       const isUserAborted = options.signal?.aborted;
 
       if (isUserAborted) {
-        throw options.signal.reason || new Error('Request aborted');
+        throw options.signal?.reason || new Error('Request aborted');
       }
 
       const isNetworkError =
-        err.name === 'TypeError' ||
-        err.message?.includes('fetch failed') ||
-        err.message?.includes('network') ||
-        err.message?.includes('Failed to fetch');
+        error.name === 'TypeError' ||
+        error.message?.includes('fetch failed') ||
+        error.message?.includes('network') ||
+        error.message?.includes('Failed to fetch');
 
       const shouldRetry = (isTimeout || isNetworkError) && attempts <= MAX_RETRIES;
 

@@ -1,4 +1,4 @@
-// NOTE: Keep in sync with bot constants in astrox-license-bot/src/utils/constants.js
+// NOTE: Keep in sync with bot constants in cipher-bot/src/utils/constants.js
 export const LICENSE_STATUS = {
   ACTIVE: 'active',
   SUSPENDED: 'suspended',

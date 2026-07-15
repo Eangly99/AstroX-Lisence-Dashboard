@@ -33,7 +33,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
       case 'audit':
         return 'Security Ledger';
       default:
-        return 'AstroX License';
+        return 'Cipher License';
     }
   };
 

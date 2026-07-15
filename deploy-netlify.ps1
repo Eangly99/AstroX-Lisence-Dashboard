@@ -5,9 +5,9 @@ $ErrorActionPreference = "Stop"
 
 # Auto-detect directory and navigate to the project folder if run from the root
 $currentDir = Split-Path -Leaf (Get-Location)
-if ($currentDir -eq "astrox-license") {
-    Write-Host "Navigating to astrox-license-dash..." -ForegroundColor Gray
-    Set-Location -Path "astrox-license-dash"
+if ($currentDir -eq "cipher-license-bot") {
+    Write-Host "Navigating to cipher-dash..." -ForegroundColor Gray
+    Set-Location -Path "cipher-dash"
 }
 
 # Ensure Netlify CLI is installed

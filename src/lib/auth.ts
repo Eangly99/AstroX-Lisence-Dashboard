@@ -51,8 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const apiToken = await new SignJWT({ userId })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
-            .setIssuer('astrox-license')
-            .setAudience('astrox-license-admin')
+            .setIssuer('cipher-license')
+            .setAudience('cipher-license-admin')
             .setExpirationTime('1h') // 1 hour validity (reduced from 24h)
             .sign(secretKey);
           token.apiToken = apiToken;
